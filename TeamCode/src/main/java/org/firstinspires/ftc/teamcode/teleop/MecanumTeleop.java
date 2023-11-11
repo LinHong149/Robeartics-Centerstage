@@ -2,12 +2,17 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp(name="Mecanum Teleop", group="Mecanum")
 public class MecanumTeleop extends LinearOpMode {
 
-    HardwareMecanum robot = new HardwareMecanum();
+    // Declare servos and motors
+    public Servo claw, wrist, lArm, rArm;
+    public DcMotor fr, fl, br, bl, lSlide, rSlide;
 
     boolean clawOpen = false;
     boolean isOuttaking = false;
@@ -17,14 +22,60 @@ public class MecanumTeleop extends LinearOpMode {
     double lOuttake = 0.16;
     double rOuttake = 0.90;
 
+    // Initialize standard Hardware interfaces
+    public void initHardware() {
+        // Servos
+        claw = hardwareMap.get(Servo.class, "claw");
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        lArm = hardwareMap.get(Servo.class, "lArm");
+        rArm = hardwareMap.get(Servo.class, "rArm");
+
+        wrist.setPosition(0.73);
+        claw.setPosition(0.55); // Closed
+        lArm.setPosition(0.77); // Intaking
+        rArm.setPosition(0.29); // Intaking
+
+        // Motors
+        fr = hardwareMap.get(DcMotor.class, "fr");
+        fl = hardwareMap.get(DcMotor.class, "fl");
+        br = hardwareMap.get(DcMotor.class, "br");
+        bl = hardwareMap.get(DcMotor.class, "bl");
+        lSlide = hardwareMap.get(DcMotor.class, "lSlide");
+        rSlide = hardwareMap.get(DcMotor.class, "rSlide");
+
+        fr.setPower(0);
+        fl.setPower(0);
+        br.setPower(0);
+        bl.setPower(0);
+        lSlide.setPower(0);
+        rSlide.setPower(0);
+
+        fr.setDirection(DcMotor.Direction.REVERSE);
+        br.setDirection(DcMotor.Direction.REVERSE);
+        fl.setDirection(DcMotor.Direction.FORWARD);
+        bl.setDirection(DcMotor.Direction.FORWARD);
+        lSlide.setDirection(DcMotor.Direction.FORWARD);
+        rSlide.setDirection(DcMotor.Direction.REVERSE);
+
+        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
     @Override
     public void runOpMode() {
-        robot.init(hardwareMap);
-
+        initHardware();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // Wait for PLAY
         waitForStart();
 
         while (opModeIsActive()) {
@@ -42,10 +93,10 @@ public class MecanumTeleop extends LinearOpMode {
             double frontRightPower = (drive - strafe - rotate) / denominator;
             double backRightPower = (drive + strafe - rotate) / denominator;
 
-            robot.fr.setPower(frontRightPower);
-            robot.fl.setPower(frontLeftPower);
-            robot.br.setPower(backRightPower);
-            robot.bl.setPower(backLeftPower);
+            fr.setPower(frontRightPower);
+            fl.setPower(frontLeftPower);
+            br.setPower(backRightPower);
+            bl.setPower(backLeftPower);
 
             telemetry.addData("strafe","%.2f", strafe);
             telemetry.addData("drive","%.2f", drive);
@@ -53,49 +104,50 @@ public class MecanumTeleop extends LinearOpMode {
 
 
             // Slides
-            while (gamepad1.right_trigger > 0) {
+            if (gamepad1.right_trigger > 0) {
                 telemetry.addData("dpad_up","active");
                 telemetry.update();
-                robot.lSlide.setPower(0.4);
-                robot.rSlide.setPower(0.4);
+                lSlide.setPower(0.4);
+                rSlide.setPower(0.4);
+            } else if (gamepad1.left_trigger > 0) {
+                lSlide.setPower(-0.4);
+                rSlide.setPower(-0.4);
+            } else {
+                lSlide.setPower(0);
+                rSlide.setPower(0);
             }
-            while (gamepad1.left_trigger > 0) {
-                robot.lSlide.setPower(-0.4);
-                robot.rSlide.setPower(-0.4);
-            }
-            robot.lSlide.setPower(0);
-            robot.rSlide.setPower(0);
 
 
-            // Intake and outtake
+            // Open close
             if (gamepad1.y) {
                 telemetry.addData("Claw","active");
                 telemetry.update();
                 if (clawOpen) {
                     clawOpen = false;
-                    robot.claw.setPosition(0.55); // Close the claw
+                    claw.setPosition(0.55); // Close the claw
                 } else {
                     clawOpen = true;
-                    robot.claw.setPosition(0.2); // Open the claw
+                    claw.setPosition(0.2); // Open the claw
                 }
                 sleep(200);
             }
 
+            // Intake and outtake
             if (gamepad1.b) {
                 if (isOuttaking) {
                     telemetry.addData("Extention","intake");
                     telemetry.update();
                     isOuttaking = false;
-                    robot.wrist.setPosition(0.72); // Retract
-                    robot.lArm.setPosition(lIntake); // Parallel
-                    robot.rArm.setPosition(rIntake);
+                    wrist.setPosition(0.72); // Retract
+                    lArm.setPosition(lIntake); // Parallel
+                    rArm.setPosition(rIntake);
                 } else {
                     telemetry.addData("Extention","outtake");
                     telemetry.update();
                     isOuttaking = true;
-                    robot.wrist.setPosition(0.0); //Extend
-                    robot.lArm.setPosition(lOuttake);
-                    robot.rArm.setPosition(rOuttake);
+                    wrist.setPosition(0.0); //Extend
+                    lArm.setPosition(lOuttake);
+                    rArm.setPosition(rOuttake);
                 }
                 sleep(200);
             }
