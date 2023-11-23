@@ -1,17 +1,16 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode.Auton;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Pipeline.DetectionPipeline;
+import org.firstinspires.ftc.teamcode.Pipeline.RedDetectionPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-
-@TeleOp(name="OpenCVTest", group="Linear Opmode")
-public class OpenCVTest extends LinearOpMode {
+@TeleOp(name="RedAuton", group="Linear Opmode")
+public class RedAuton extends LinearOpMode {
     OpenCvCamera webcam;
-    DetectionPipeline pipeline = new DetectionPipeline();
+    RedDetectionPipeline pipeline = new RedDetectionPipeline();
 
     @Override
     public void runOpMode() {
@@ -38,7 +37,7 @@ public class OpenCVTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            DetectionPipeline.Position position = pipeline.getPosition();
+            RedDetectionPipeline.Position position = pipeline.getPosition();
             telemetry.addData("positionGiven", pipeline.getPosition().toString());
 
             // Use the position data to control the robot
