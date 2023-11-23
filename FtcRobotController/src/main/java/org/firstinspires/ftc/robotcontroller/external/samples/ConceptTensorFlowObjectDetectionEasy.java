@@ -41,20 +41,20 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.List;
 
 /*
- * This OpMode illustrates the basics of TensorFlow Object Detection, using
+ * This OpMode illustrates the basics of org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection, using
  * the easiest way.
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection Easy", group = "Concept")
+@TeleOp(name = "Concept: org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection Easy", group = "Concept")
 @Disabled
 public class ConceptTensorFlowObjectDetectionEasy extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     /**
-     * The variable to store our instance of the TensorFlow Object Detection processor.
+     * The variable to store our instance of the org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection processor.
      */
     private TfodProcessor tfod;
 
@@ -100,11 +100,11 @@ public class ConceptTensorFlowObjectDetectionEasy extends LinearOpMode {
     }   // end runOpMode()
 
     /**
-     * Initialize the TensorFlow Object Detection processor.
+     * Initialize the org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection processor.
      */
     private void initTfod() {
 
-        // Create the TensorFlow processor the easy way.
+        // Create the org.firstinspires.ftc.teamcode.teleop.TensorFlow processor the easy way.
         tfod = TfodProcessor.easyCreateWithDefaults();
 
         // Create the vision portal the easy way.
@@ -119,7 +119,7 @@ public class ConceptTensorFlowObjectDetectionEasy extends LinearOpMode {
     }   // end method initTfod()
 
     /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
+     * Add telemetry about org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection (TFOD) recognitions.
      */
     private void telemetryTfod() {
 

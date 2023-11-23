@@ -43,13 +43,13 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.List;
 
 /*
- * This OpMode illustrates the basics of TensorFlow Object Detection, using
+ * This OpMode illustrates the basics of org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection, using
  * two webcams.
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection Switchable Cameras", group = "Concept")
+@TeleOp(name = "Concept: org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection Switchable Cameras", group = "Concept")
 @Disabled
 public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpMode {
 
@@ -61,7 +61,7 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
     private boolean oldRightBumper;
 
     /**
-     * The variable to store our instance of the TensorFlow Object Detection processor.
+     * The variable to store our instance of the org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection processor.
      */
     private TfodProcessor tfod;
 
@@ -110,11 +110,11 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
     }   // end runOpMode()
 
     /**
-     * Initialize the TensorFlow Object Detection processor.
+     * Initialize the org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection processor.
      */
     private void initTfod() {
 
-        // Create the TensorFlow processor by using a builder.
+        // Create the org.firstinspires.ftc.teamcode.teleop.TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder().build();
 
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -144,7 +144,7 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
     }   // end method telemetryCameraSwitching()
 
     /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
+     * Add telemetry about org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection (TFOD) recognitions.
      */
     private void telemetryTfod() {
 

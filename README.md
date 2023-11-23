@@ -129,9 +129,9 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
   * If you forget to update both apps at the same time, an error message will be shown explaining which app is older and should be updated.
 * FTC_FieldCoordinateSystemDefinition.pdf has been moved.  It is still in the git history, but has been removed from the git snapshot corresponding with the 8.2 tag.  The official version now lives at [Field Coordinate System](https://ftc-docs.firstinspires.org/field-coordinate-system).
 * `LynxUsbDevice.addConfiguredModule()` and `LynxUsbDevice.getConfiguredModule()` have been replaced with `LynxUsbDevice.getOrAddModule()`.
-* Old Blocks for Vuforia and TensorFlow Object Detection are obsolete and have been removed from the
+* Old Blocks for Vuforia and org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection are obsolete and have been removed from the
   Blocks editor's toolbox. Existing Blocks OpModes that contain the old Blocks for Vuforia or
-  TensorFlow Object Detection can be opened in the Blocks editor, but running them will not work.
+  org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection can be opened in the Blocks editor, but running them will not work.
 
 ### New features
 * Adds new `VisionPortal` API for computer vision
@@ -140,7 +140,7 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
     * Adds support for detecting AprilTags.
     * `VisionPortal` is the new entry point for both AprilTag and TFOD processing.
     * Vuforia will be removed in a future release.
-    * Updated TensorFlow dependencies.
+    * Updated org.firstinspires.ftc.teamcode.teleop.TensorFlow dependencies.
     * Added support for webcam camera controls to blocks.
     * The Blocks editor's toolbox now has a Vision category, directly above the Utilities category.
 * Related documentation for associated technologies can be found at
@@ -242,7 +242,7 @@ This is a bug fix only release to address the following four issues.
     custom driver, there is no guarantee about which implementation will be returned.
 
 ### Bug Fixes
-* Fixes accessing the "Manage TensorFlow Lite Models" and "Manage Sounds" links and performing
+* Fixes accessing the "Manage org.firstinspires.ftc.teamcode.teleop.TensorFlow Lite Models" and "Manage Sounds" links and performing
   Blocks and OnBotJava OpMode downloads from the REV Hardware Client.
 * Fixes issue where an I2C device driver would be auto-initialized using the parameters assigned in
   a previous OpMode run.
@@ -288,7 +288,7 @@ This is a bug fix only release to address the following four issues.
   * Abstracted hardware class is [RobotHardware.java](FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/RobotHardware.java)
 * Updates RobotAutoDriveByGyro_Linear Java sample to use REV Control/Expansion hub IMU.
 * Updates Vuforia samples to reference PowerPlay assets and have correct names and field locations of image targets.
-* Updates TensorFlow samples to reference PowerPlay assets.
+* Updates org.firstinspires.ftc.teamcode.teleop.TensorFlow samples to reference PowerPlay assets.
 * Adds opt-in support for Java 8 language features to the OnBotJava editor.
   * To opt in, open the OnBotJava Settings, and check `Enable beta Java 8 support`.
   * Note that Java 8 code will only compile when the Robot Controller runs Android 7.0 Nougat or later.
@@ -314,7 +314,7 @@ This is a bug fix only release to address the following four issues.
 * Adds support for allowing the user to edit the comment for the runOpMode block.
 * Adds parameterDefaultValues field to @ExportToBlocks. This provides the ability for a java method with an @ExportToBlocks annotation to specify default values for method parameters when it is shown in the block editor.
 * Make LinearOpMode blocks more readable. The opmode name is displayed on the runOpMode block, but not on the other LinearOpMode blocks.
-* Added support to TensorFlow Object Detection for using a different frame generator, instead of Vuforia.
+* Added support to org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection for using a different frame generator, instead of Vuforia.
   Using Vuforia to pass the camera frame to TFOD is still supported.
 * Removes usage of Renderscript.
 * Fixes logspam on app startup of repeated stacktraces relating to `"Failed resolution of: Landroid/net/wifi/p2p/WifiP2pManager$DeviceInfoListener"`
@@ -342,7 +342,7 @@ This is a bug fix only release to address the following four issues.
 * Fixes blocks editor so it doesn't ask you to save when you haven't modified anything.
 * Fixes uploading a very large blocks project to offline blocks editor.
 * Fixes bug that caused blocks for DcMotorEx to be omitted from the blocks editor toolbox.
-* Fixes [Blocks Programs Stripped of Blocks (due to using TensorFlow Label block)](https://ftcforum.firstinspires.org/forum/ftc-technology/blocks-programming/87035-blocks-programs-stripped-of-blocks)
+* Fixes [Blocks Programs Stripped of Blocks (due to using org.firstinspires.ftc.teamcode.teleop.TensorFlow Label block)](https://ftcforum.firstinspires.org/forum/ftc-technology/blocks-programming/87035-blocks-programs-stripped-of-blocks)
 
 ## Version 7.1 (20211223-120805)
 
@@ -353,11 +353,11 @@ This is a bug fix only release to address the following four issues.
 * Fixes bug where Driver Station would use generic 20% deadzone for Xbox360 and Logitech F310 gamepads when Advanced Gamepad Features was disabled.
 * Added SimpleOmniDrive sample OpMode.
 * Adds UVC white balance control API.
-* Fixes [issue #259](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/259) Most blocks samples for TensorFlow can't be used for a different model.
+* Fixes [issue #259](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/259) Most blocks samples for org.firstinspires.ftc.teamcode.teleop.TensorFlow can't be used for a different model.
     * The blocks previously labeled TensorFlowObjectDetectionFreightFrenzy (from the subcategory named "Optimized for Freight Frenzy") and TensorFlowObjectDetectionCustomModel (from the subcategory named "Custom Model") have been replaced with blocks labeled TensorFlowObjectDetection. Blocks in existing opmodes will be automatically updated to the new blocks when opened in the blocks editor.
 * Fixes [issue #260](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/260) Blocks can't call java method that has a VuforiaLocalizer parameter.
     * Blocks now has a block labeled VuforiaFreightFrenzy.getVuforiaLocalizer for this.
-* Added a page to manage the TensorFlow Lite models in /sdcard/FIRST/tflitemodels. To get to the TFLite Models page:
+* Added a page to manage the org.firstinspires.ftc.teamcode.teleop.TensorFlow Lite models in /sdcard/FIRST/tflitemodels. To get to the TFLite Models page:
     * You can click on the link at the bottom of the the Manage page.
     * You can click on the link at the upper-right the Blocks project page.
 * Fixes logspam when `isBusy()` is called on a motor not in RTP mode.
@@ -417,7 +417,7 @@ This is a bug fix only release to address the following four issues.
     * See section 3 of the [TI I2C spec](https://www.ti.com/lit/an/slva704/slva704.pdf).
     * Calling these new methods when using Modern Robotics hardware will result in an UnsupportedOperationException.
 * Changes VuforiaLocalizer `close()` method to be public.
-* Adds support for TensorFlow v2 object detection models.
+* Adds support for org.firstinspires.ftc.teamcode.teleop.TensorFlow v2 object detection models.
 * Reduces ambiguity of the Self Inspect language and graphics.
 * OnBotJava now warns about potentially unintended file overwrites.
 * Improves behavior of the Wi-Fi band and channel selector on the Manage webpage.
@@ -425,7 +425,7 @@ This is a bug fix only release to address the following four issues.
 ### Bug fixes
  * Fixes Robot Controller app crash on Android 9+ when a Driver Station connects.
  * Fixes issue where an OpMode was responsible for calling shutdown on the
-   TensorFlow TFObjectDetector. Now this is done automatically.
+   org.firstinspires.ftc.teamcode.teleop.TensorFlow TFObjectDetector. Now this is done automatically.
  * Fixes Vuforia initialization blocks to allow user to chose AxesOrder. Updated
    relevant blocks sample opmodes.
  * Fixes [FtcRobotController issue #114](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/114)
@@ -505,9 +505,9 @@ This is a bug fix only release to address the following four issues.
       Position PIDF values: `P = 5.0`
 
 ### New features
-* Includes TensorFlow inference model and sample OpModes to detect Ultimate Goal Starter Stacks (four rings vs single ring stack).
+* Includes org.firstinspires.ftc.teamcode.teleop.TensorFlow inference model and sample OpModes to detect Ultimate Goal Starter Stacks (four rings vs single ring stack).
 * Includes Vuforia Ultimate Goal vision targets and sample OpModes.
-* Introduces a digital zoom feature for TensorFlow object detection (to detect objects more accurately at greater distances).
+* Introduces a digital zoom feature for org.firstinspires.ftc.teamcode.teleop.TensorFlow object detection (to detect objects more accurately at greater distances).
 * Adds configuration entry for the REV UltraPlanetary HD Hex motor
 
 ### Enhancements
@@ -555,8 +555,8 @@ Version 5.5 requires Android Studio 4.0 or later.
     * Monospace
     * HTML (certain tags only)
 * Adds blocks support for switching cameras.
-* Adds Blocks support for TensorFlow Object Detection with a custom model.
-* Adds support for uploading a custom TensorFlow Object Detection model in the Manage page, which
+* Adds Blocks support for org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection with a custom model.
+* Adds support for uploading a custom org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection model in the Manage page, which
   is especially useful for Blocks and OnBotJava users.
 * Shows new Control Hub blink codes when the Wi-Fi band is switched using the Control Hub's button (only possible on Control Hub OS 1.1.2)
 * Adds new warnings which can be disabled in the Advanced RC Settings
@@ -661,7 +661,7 @@ Version 5.5 requires Android Studio 4.0 or later.
     * On affected devices which **do** have the patch, the issue was manifest as simply a failure to start streaming.
     * The Tech Team believes that the root cause of the issue is a bug in the Linux kernel XHCI driver. A workaround was implemented in the SDK UVC driver.
 * Fixes bug in UVC driver where often half the frames from the camera would be dropped (e.g. only 15FPS delivered during a streaming session configured for 30FPS).
-* Fixes issue where TensorFlow Object Detection would show results whose confidence was lower than
+* Fixes issue where org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection would show results whose confidence was lower than
   the minimum confidence parameter.
 * Fixes a potential exploitation issue of [CVE-2019-11358](https://www.cvedetails.com/cve/CVE-2019-11358/) in OnBotJava
 * Fixes changing the address of an Expansion Hub with additional Expansion Hubs connected to it
@@ -742,16 +742,16 @@ Version 5.5 requires Android Studio 4.0 or later.
 * Adds Skystone Vuforia image target data.
    * Includes sample Skystone Vuforia Navigation OpModes (Java).
    * Includes sample Skystone Vuforia Navigation OpModes (Blocks).
-* Adds TensorFlow inference model (.tflite) for Skystone game elements.
-   * Includes sample Skystone TensorFlow OpModes (Java).
-   * Includes sample Skystone TensorFlow OpModes (Blocks).
+* Adds org.firstinspires.ftc.teamcode.teleop.TensorFlow inference model (.tflite) for Skystone game elements.
+   * Includes sample Skystone org.firstinspires.ftc.teamcode.teleop.TensorFlow OpModes (Java).
+   * Includes sample Skystone org.firstinspires.ftc.teamcode.teleop.TensorFlow OpModes (Blocks).
 * Removes older (season-specific) sample OpModes.
 * Includes 64-bit support (to comply with [Google Play requirements](https://android-developers.googleblog.com/2019/01/get-your-apps-ready-for-64-bit.html)).
 * Protects against Stuck OpModes when a Restart Robot is requested. (Thanks to FROGbots-4634) ([ftc_app issue #709](https://github.com/ftctechnh/ftc_app/issues/709))
 * Blocks related changes:
    * Fixes bug with blocks generated code when hardware device name is a java or javascript reserved word.
    * Shows generated java code for blocks, even when hardware items are missing from the active configuration.
-   * Displays warning icon when outdated Vuforia and TensorFlow blocks are used ([SkyStone issue #27](https://github.com/FIRST-Tech-Challenge/SkyStone/issues/27))
+   * Displays warning icon when outdated Vuforia and org.firstinspires.ftc.teamcode.teleop.TensorFlow blocks are used ([SkyStone issue #27](https://github.com/FIRST-Tech-Challenge/SkyStone/issues/27))
 
 ## Version 5.1 (20190820-222104)
 * Defines default PIDF parameters for the following motors:
@@ -798,7 +798,7 @@ Known issues:
  * Miscellaneous bug fixes and improvements.
 
 ## Version 4.3 (built on 18.10.31)
- * Includes missing TensorFlow-related libraries and files.
+ * Includes missing org.firstinspires.ftc.teamcode.teleop.TensorFlow-related libraries and files.
 
 ## Version 4.2 (built on 18.10.30)
  * Includes fix to avoid deadlock situation with WatchdogMonitor which could result in USB communication errors.
@@ -819,8 +819,8 @@ Known issues:
      - Includes a fix for a problem with the Velocity blocks that were reported in the FTC Technology forum (Blocks Programming subforum).
      - Change the "Save completed successfully." message to a white color so it will contrast with a green background.
      - Fixed the "Download image" feature so it will work if there are text blocks in the OpMode.
- * Introduce support for Google's TensorFlow Lite technology for object detetion for 2018-2019 game.
-     - TensorFlow lite can recognize Gold Mineral and Silver Mineral from 2018-2019 game.
+ * Introduce support for Google's org.firstinspires.ftc.teamcode.teleop.TensorFlow Lite technology for object detetion for 2018-2019 game.
+     - org.firstinspires.ftc.teamcode.teleop.TensorFlow lite can recognize Gold Mineral and Silver Mineral from 2018-2019 game.
      - Example Java and Block OpModes are included to show how to determine the relative position of the gold block (left, center, right).
 
 ## Version 4.1 (released on 18.09.24)

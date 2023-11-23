@@ -43,7 +43,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.List;
 
 /*
- * This OpMode illustrates the basics of using both AprilTag recognition and TensorFlow
+ * This OpMode illustrates the basics of using both AprilTag recognition and org.firstinspires.ftc.teamcode.teleop.TensorFlow
  * Object Detection.
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
@@ -60,7 +60,7 @@ public class ConceptDoubleVision extends LinearOpMode {
     private AprilTagProcessor aprilTag;
 
     /**
-     * The variable to store our instance of the TensorFlow Object Detection processor.
+     * The variable to store our instance of the org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection processor.
      */
     private TfodProcessor tfod;
 
@@ -74,7 +74,7 @@ public class ConceptDoubleVision extends LinearOpMode {
         initDoubleVision();
 
         // This OpMode loops continuously, allowing the user to switch between
-        // AprilTag and TensorFlow Object Detection (TFOD) image processors.
+        // AprilTag and org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection (TFOD) image processors.
         while (!isStopRequested())  {
 
             if (opModeInInit()) {
@@ -180,7 +180,7 @@ public class ConceptDoubleVision extends LinearOpMode {
     }   // end method telemetryAprilTag()
 
     /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
+     * Add telemetry about org.firstinspires.ftc.teamcode.teleop.TensorFlow Object Detection (TFOD) recognitions.
      */
     private void telemetryTfod() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
