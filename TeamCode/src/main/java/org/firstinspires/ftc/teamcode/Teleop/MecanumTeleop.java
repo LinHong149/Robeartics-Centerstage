@@ -147,23 +147,18 @@ public class MecanumTeleop extends LinearOpMode {
             packet.put("Error", error);
             dashboard.sendTelemetryPacket(packet);
 
-//            if (gamepad1.right_trigger > 0 && lSlide.getCurrentPosition() < 455) {
-//                telemetry.addData("dpad_up","active");
-//                telemetry.update();
-//                lSlide.setPower(0.4);
-//                rSlide.setPower(0.4);
-//            } else if (gamepad1.left_trigger > 0) {
-//                lSlide.setPower(-0.25);
-//                rSlide.setPower(-0.25);
-//            } else {
-//                if (gamepad1.right_trigger > 0) { // Prevent jittering
-//                    lSlide.setPower(0.15);
-//                    rSlide.setPower(0.15);
-//                } else {
-//                    lSlide.setPower(0);
-//                    rSlide.setPower(0);
-//                }
-//            }
+            if (gamepad1.right_trigger > 0 && lSlide.getCurrentPosition() < 455) { // Raise lift
+                telemetry.addData("dpad_up","active");
+                telemetry.update();
+                lSlide.setPower(0.4);
+                rSlide.setPower(0.4);
+            } else if (gamepad1.left_trigger > 0) { // Lower lift
+                lSlide.setPower(-0.25);
+                rSlide.setPower(-0.25);
+            } else { // Stops slides
+                lSlide.setPower(0);
+                rSlide.setPower(0);
+            }
 
 
             // Open close
