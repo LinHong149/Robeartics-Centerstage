@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Teleop;
+package org.firstinspires.ftc.teamcode.drive.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
@@ -12,7 +12,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 
-@TeleOp(name="Mecanum Teleop", group="Mecanum")
+@TeleOp(name="Mecanum Teleop", group="Teleop")
 public class MecanumTeleop extends LinearOpMode {
 
     // Declare servos and motors
