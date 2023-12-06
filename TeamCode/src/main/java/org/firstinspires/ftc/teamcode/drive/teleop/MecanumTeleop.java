@@ -7,19 +7,22 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 
-@TeleOp(name="Mecanum Teleop", group="Teleop")
+@TeleOp(name="hehehaha", group="Mecanum")
 public class MecanumTeleop extends LinearOpMode {
 
     // Declare servos and motors
-    public Servo claw, wrist, lArm, rArm;
+    public Servo wristR = null;
+    public Servo armL = null;
+    public Servo armR = null;
+    public Servo wristL = null;
+    public Servo clawR = null;
+    public Servo clawL = null;
     public DcMotor fr, fl, br, bl, lSlide, rSlide;
 
     boolean clawOpen = false;
+    boolean isPickingUp = false;
     boolean isOuttaking = false;
 
     double lIntake = 0.77;
@@ -27,29 +30,27 @@ public class MecanumTeleop extends LinearOpMode {
     double lOuttake = 0.16;
     double rOuttake = 0.90;
 
-    double P = 0.1; // Tune these values
-    double I = 0;
-    double D = 0;
-    double integral = 0;
-    double previous_error = 0;
-    double setpoint = 0;
 
-    FtcDashboard dashboard;
-    Telemetry dashboardTelemetry;
 
     // Initialize standard Hardware interfaces
     public void initHardware() {
         // Servos
-        claw = hardwareMap.get(Servo.class, "claw");
-        wrist = hardwareMap.get(Servo.class, "wrist");
-        lArm = hardwareMap.get(Servo.class, "lArm");
-        rArm = hardwareMap.get(Servo.class, "rArm");
+        wristR = hardwareMap.get(Servo.class, "wristR");
+        armL = hardwareMap.get(Servo.class, "armL");
+        armR = hardwareMap.get(Servo.class, "armR");
+        wristL = hardwareMap.get(Servo.class, "wristL");
+        clawR = hardwareMap.get(Servo.class, "clawR");
+        clawL = hardwareMap.get(Servo.class, "clawL");
 
-        wrist.setPosition(0.73);
-        claw.setPosition(0.55); // Closed
-        // lArm.setPosition(0.77); // Intaking
-        lArm.setPosition(0.77); // Intaking
-        rArm.setPosition(0.29); // Intaking
+        //--------------------------------------------------MAYBE IMPORTANT---------------------
+        // armL.setPosition(1); //towards 0 is clockwise
+        // armR.setPosition(0); //towards 1 is clockwise +0.25 = armL
+        // wristR.setPosition(0.85);
+        // wristL.setPosition(0.85); //both the same 0 is counterclockwise
+        // clawR.setPosition(0.47);
+        // clawL.setPosition(0.62);
+
+
 
         // Motors
         fr = hardwareMap.get(DcMotor.class, "fr");
@@ -80,6 +81,12 @@ public class MecanumTeleop extends LinearOpMode {
         lSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+
+        lSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -90,15 +97,15 @@ public class MecanumTeleop extends LinearOpMode {
     public void runOpMode() {
         initHardware();
         telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        telemetry.addData("armL port number", armR.getPortNumber());
 
-        dashboard = FtcDashboard.getInstance();
-        dashboardTelemetry = dashboard.getTelemetry();
+        telemetry.update();
 
         waitForStart();
 
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
+
 
             // Motors: driving
             double drive = -gamepad1.left_stick_y;
@@ -124,77 +131,99 @@ public class MecanumTeleop extends LinearOpMode {
             telemetry.addData("lSlide Pos", lSlide.getCurrentPosition());
             telemetry.addData("rSlide Pos", rSlide.getCurrentPosition());
 
-            // Slides
-            if (gamepad1.right_trigger > 0) {
-                setpoint += 1; // Increment the setpoint
-            } else if (gamepad1.left_trigger > 0) {
-                setpoint -= 1; // Decrement the setpoint
+            //claw
+            if(gamepad1.a && (clawOpen == false)){//open claw
+                clawR.setPosition(0.6);
+                clawL.setPosition(0.7);
+                sleep(300);
+                clawOpen = true;
+            }
+            else if (gamepad1.a && (clawOpen == true)){ //close claw
+                clawR.setPosition(0.33);
+                clawL.setPosition(0.43);
+                sleep(300);
+                clawOpen = false;
             }
 
-            // PID Control for Slides
-            double error = setpoint - lSlide.getCurrentPosition();
-            integral += (error * 0.02); // Assuming loop time of 20 milliseconds
-            double derivative = (error - previous_error) / 0.02;
-            double output = P * error + I * integral + D * derivative;
-            lSlide.setPower(output);
-            rSlide.setPower(output);
-            previous_error = error;
+            //picking up position
+            if (gamepad1.x && (isPickingUp == false)){ //going to picking up position
+                wristR.setPosition(0.6);
+                wristL.setPosition(0.6);
+                armL.setPosition(1);
+                armR.setPosition(0);
+                sleep(300);
+                isPickingUp = true;
+            }
+            else if (gamepad1.x && (isPickingUp == true)){ //going to DRIVING position
+                wristR.setPosition(0.9);
+                wristL.setPosition(0.9);
+                armL.setPosition(0.9);
+                armR.setPosition(0.1);
+                sleep(300);
+                isPickingUp = false;
+            }
 
-            // Send data to FTC Dashboard
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("Setpoint", setpoint);
-            packet.put("Current Position", lSlide.getCurrentPosition());
-            packet.put("Error", error);
-            dashboard.sendTelemetryPacket(packet);
 
-            if (gamepad1.right_trigger > 0 && lSlide.getCurrentPosition() < 455) { // Raise lift
+            //OUTTAKING
+            if(gamepad1.y && (isOuttaking == false)){ // going to Outtaking position
+
+                wristR.setPosition(0.5);
+                wristL.setPosition(0.5);
+                armL.setPosition(0.2);
+                armR.setPosition(0.8);
+                sleep(2000);
+                wristR.setPosition(0.9);
+                wristL.setPosition(0.9);
+                sleep(300);
+                isOuttaking = true;
+            }
+            else if(gamepad1.y && (isOuttaking == true) && (clawOpen == false)){ //going to DRIVING position
+
+                wristR.setPosition(0.5);
+                wristL.setPosition(0.5);
+                armL.setPosition(0.9);
+                armR.setPosition(0.1);
+                sleep(1000);
+                wristR.setPosition(0.9);
+                wristL.setPosition(0.9);
+
+                sleep(300);
+                isOuttaking = false;
+            }
+
+
+
+            // Slides
+            if (gamepad1.right_trigger > 0 && lSlide.getCurrentPosition() < 720) {
                 telemetry.addData("dpad_up","active");
                 telemetry.update();
                 lSlide.setPower(0.4);
                 rSlide.setPower(0.4);
-            } else if (gamepad1.left_trigger > 0) { // Lower lift
+            } else if (gamepad1.left_trigger >0 &&lSlide.getCurrentPosition() > 0 ) {
                 lSlide.setPower(-0.25);
                 rSlide.setPower(-0.25);
-            } else { // Stops slides
-                lSlide.setPower(0);
-                rSlide.setPower(0);
             }
 
-
-            // Open close
-            if (gamepad1.a || gamepad1.b) {
-                telemetry.addData("Claw","active");
-                telemetry.update();
-                if (clawOpen) {
-                    clawOpen = false;
-                    claw.setPosition(0.55); // Close the claw
+            else {
+                if (gamepad1.right_trigger > 0) { // Prevent jittering
+                    lSlide.setPower(0.15);
+                    rSlide.setPower(0.15);
                 } else {
-                    clawOpen = true;
-                    claw.setPosition(0.2); // Open the claw
+                    lSlide.setPower(0);
+                    rSlide.setPower(0);
                 }
-                sleep(200);
             }
 
-            // Intake and outtake
-            if (gamepad1.x) {
-                if (isOuttaking) {
-                    telemetry.addData("Extention","intake");
-                    telemetry.update();
-                    isOuttaking = false;
-                    wrist.setPosition(0.72); // Retract
-                    lArm.setPosition(lIntake); // Parallel
-                    rArm.setPosition(rIntake);
-                } else {
-                    telemetry.addData("Extention","outtake");
-                    telemetry.update();
-                    isOuttaking = true;
-                    wrist.setPosition(0.0); //Extend
-                    lArm.setPosition(lOuttake);
-                    rArm.setPosition(rOuttake);
-                }
-                sleep(200);
-            }
+
+
+
             telemetry.update();
         }
     }
 }
+
+
+
+
+
+
