@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Pipeline;
+package org.firstinspires.ftc.teamcode.drive.pipeline;
 
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.core.Mat;
@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.MatOfPoint;
 
-public class BlueDetectionPipeline extends OpenCvPipeline {
-    Scalar midBlueLowerBound = new Scalar(90, 100, 70);  // Lower HSV values for mid blues
-    Scalar midBlueUpperBound = new Scalar(120, 255, 255); // Upper HSV values for mid blues
-    Scalar deepBlueLowerBound = new Scalar(120, 100, 70); // Lower HSV values for deeper blues
-    Scalar deepBlueUpperBound = new Scalar(150, 255, 255); // Upper HSV values for deeper blues
+public class DetectionPipeline extends OpenCvPipeline {
+    Scalar lowerRedLowerBound = new Scalar(0, 100, 100);
+    Scalar lowerRedUpperBound = new Scalar(10, 255, 255);
+    Scalar upperRedLowerBound = new Scalar(160, 100, 100);
+    Scalar upperRedUpperBound = new Scalar(180, 255, 255);
 
     Mat mask = new Mat();
-    Mat maskLowerBlue = new Mat();
-    Mat maskUpperBlue = new Mat();
+    Mat maskLowerRed = new Mat();
+    Mat maskUpperRed = new Mat();
     Mat hierarchy = new Mat();
 
     public enum Position {
@@ -34,14 +34,13 @@ public class BlueDetectionPipeline extends OpenCvPipeline {
         Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
 
         // Apply a threshold for the lower red range
-        Core.inRange(mask, midBlueLowerBound, midBlueUpperBound, maskLowerBlue);
-
+        Core.inRange(mask, lowerRedLowerBound, lowerRedUpperBound, maskLowerRed);
 
         // Apply a threshold for the upper red range
-        Core.inRange(mask, deepBlueLowerBound, deepBlueUpperBound, maskUpperBlue);
+        Core.inRange(mask, upperRedLowerBound, upperRedUpperBound, maskUpperRed);
 
         // Combine both red masks
-        Core.bitwise_or(maskLowerBlue, maskUpperBlue, mask);
+        Core.bitwise_or(maskLowerRed, maskUpperRed, mask);
 
         // Find contours
         List<MatOfPoint> contours = new ArrayList<>();

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Pipeline;
+package org.firstinspires.ftc.teamcode.drive.pipeline;
 
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.core.Mat;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.MatOfPoint;
 
-public class DetectionPipeline extends OpenCvPipeline {
+public class RedDetectionPipeline extends OpenCvPipeline {
     Scalar lowerRedLowerBound = new Scalar(0, 100, 100);
     Scalar lowerRedUpperBound = new Scalar(10, 255, 255);
     Scalar upperRedLowerBound = new Scalar(160, 100, 100);

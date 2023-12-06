@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.drive.auton;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Pipeline.RedDetectionPipeline;
+import org.firstinspires.ftc.teamcode.drive.pipeline.RedDetectionPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@TeleOp(name="RedAuton", group="Linear Opmode")
+@Autonomous(name="RedAuton", group="auton")
 public class RedAuton extends LinearOpMode {
     OpenCvCamera webcam;
     RedDetectionPipeline pipeline = new RedDetectionPipeline();
