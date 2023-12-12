@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.auton;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,9 +13,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
-
-@Autonomous(name="BlueLeft", group="auton")
-public class BlueLeft extends LinearOpMode {
+@Autonomous(name="RedRight", group="auton")
+public class RedRight extends LinearOpMode {
 
     // Declare servos and motors
     public Servo wristR = null;
@@ -121,30 +119,17 @@ public class BlueLeft extends LinearOpMode {
     }
 
     public void setArmDown() {
-        wristR.setPosition(0.58);
-        wristL.setPosition(0.58);
+        wristR.setPosition(0.6);
+        wristL.setPosition(0.6);
 //        Thread.sleep(2000);
-        armL.setPosition(0);
+        armL.setPosition(1);
         armR.setPosition(0);
     }
     public void setArmDrive(){
         wristR.setPosition(0.9);
         wristL.setPosition(0.9);
-        armL.setPosition(0.1);
-        armR.setPosition(0.1);
-    }
-    public void setArmUp() {
-        wristR.setPosition(0.5);
-        wristL.setPosition(0.5);
-        sleep(200);
-        armL.setPosition(0.8);
-        armR.setPosition(0.8);
-    }
-    public void setArmScore() {
         armL.setPosition(0.9);
-        armR.setPosition(0.9);
-        wristR.setPosition(0.9);
-        wristL.setPosition(0.9);
+        armR.setPosition(0.1);
     }
 
     public void setSlideExtend(int time) {
@@ -162,17 +147,35 @@ public class BlueLeft extends LinearOpMode {
         rSlide.setPower(0);
     }
 
-    public void setDriveForward(int time) {
-        fl.setPower(0.7);
-        bl.setPower(0.7);
-        fr.setPower(0.7);
-        br.setPower(0.7);
-        sleep(time);
-        fl.setPower(0);
-        bl.setPower(0);
-        fr.setPower(0);
-        br.setPower(0);
-    }
+//    public void setDriveForward(double distance) {
+//        resetEncoders();
+//        distance *=100;
+//        double startPose = parallelEncoder.getCurrentPosition();
+//        while (parallelEncoder.getCurrentPosition() <= startPose+distance) {
+////            telemetry.addData("startPose", startPose);
+////            telemetry.addData("currPose", parallelEncoder.getCurrentPosition());
+////            telemetry.update();
+//            fl.setPower(0.7);
+//            bl.setPower(0.7);
+//            fr.setPower(0.7);
+//            br.setPower(0.7);
+//        }
+//        fl.setPower(0);
+//        bl.setPower(0);
+//        fr.setPower(0);
+//        br.setPower(0);
+//    }
+public void setDriveForward(int time) {
+    fl.setPower(0.7);
+    bl.setPower(0.7);
+    fr.setPower(0.7);
+    br.setPower(0.7);
+    sleep(time);
+    fl.setPower(0);
+    bl.setPower(0);
+    fr.setPower(0);
+    br.setPower(0);
+}
     public void setDriveBackward(int time) {
         fl.setPower(-0.7);
         bl.setPower(-0.7);
@@ -279,13 +282,19 @@ public class BlueLeft extends LinearOpMode {
         fr.setPower(0);
         br.setPower(0);
     }
-    public void setRotateCounterclockwise(int time) {
+    public void setRotateCounterclockwise(int degrees) {
 
-        fl.setPower(-0.7);
-        bl.setPower(-0.7);
-        fr.setPower(0.7);
-        br.setPower(0.7);
-        sleep(time);
+        double startPose = parallelEncoder.getCurrentPosition();
+        while (parallelEncoder.getCurrentPosition() <= startPose+(degrees*90)) {
+
+            telemetry.addData("y", parallelEncoder.getCurrentPosition());
+            telemetry.addData("x", perpendicularEncoder.getCurrentPosition());
+            telemetry.update();
+            fl.setPower(-0.7);
+            bl.setPower(-0.7);
+            fr.setPower(0.7);
+            br.setPower(0.7);
+        }
         fl.setPower(0);
         bl.setPower(0);
         fr.setPower(0);
@@ -320,107 +329,21 @@ public class BlueLeft extends LinearOpMode {
 
         telemetry.addData("Status", "Running");
         telemetry.addData("position", position);
-//        if (position == BlueDetectionPipeline.Position.RIGHT) {
-            setClawLClose();
-            setClawRClose();
-            setDriveBackward(850);
-            setRotateCounterclockwise(650);
-            setClawLClose();
-
-            sleep(500);
-            setArmDown();
-            setClawLClose();
-            setClawRClose();
-            sleep(1500);
-
-            setClawROpen();
-
-            setDriveRight(1000);
-            setDriveBackward(1000);
-//        }
-//        else if (position == BlueDetectionPipeline.Position.LEFT) {
-//            setClawLClose();
-//            setClawRClose();
-//            setDriveBackward(850);
-//            setRotateCounterclockwise(650);
-//            setDriveBackward(600);
-//            setClawLClose();
-//
-//            sleep(500);
-//            setArmDown();
-//            setClawLClose();
-//            setClawRClose();
-//            sleep(1500);
-//
-//            setClawROpen();
-//
-//            setDriveRight(1000);
-//            setDriveBackward(400);
-//        }
-//        else if (position == BlueDetectionPipeline.Position.CENTER) {
-//            setClawLClose();
-//            setClawRClose();
-//            setDriveRight(300);
-//            setDriveBackward(1000);
-//            setRotateCounterclockwise(650);
-//            setClawLClose();
-//
-//            sleep(500);
-//            setArmDown();
-//            setClawLClose();
-//            setClawRClose();
-//            sleep(1500);
-//
-//            setClawROpen();
-//
-//            setDriveRight(1200);
-//            setDriveBackward(400);
-//        }
-
-//        sleep(750);
-//        setArmDrive();
-//        setClawLClose();
-//        setDriveRight(400);
-//        while (lSlide.getCurrentPosition() < 600) {
-//            lSlide.setPower(0.4);
-//            rSlide.setPower(0.4); // need to hold pose
-//        }
-//        lSlide.setPower(0.1); // hold pose
-//        rSlide.setPower(0.1);
-//
-//        setArmUp();
-//        sleep(300);
-//        setArmScore();
-//        setDriveBackward(1400); // for left, spilt up
-//        sleep(500);
-//        setClawROpen();
-//        sleep(500);
-//        setDriveForward(100);
-//
-//        while (lSlide.getCurrentPosition() > 0) { // retract
-//            lSlide.setPower(-0.2);
-//            rSlide.setPower(-0.2);
-//        }
-//        lSlide.setPower(0);
-//        rSlide.setPower(0);
-//
-//        setDriveRight(800);
-//        setClawLClose();
-//        setClawRClose();
-
-
-
-
-//        if (position == BlueDetectionPipeline.Position.RIGHT) {
-//
-//        }
-//        sleep(200);
-//        clawR.setPosition(0.6);
-//        clawL.setPosition(0.6);
+//        resetEncoders();
+        setClawLClose();
+        setClawRClose();
+        setDriveForward(900);
+        wristR.setPosition(0.58);
+        wristL.setPosition(0.58);
+        armR.setPosition(0);
+        armL.setPosition(0);
+        sleep(200);
+        setClawLOpen();
+        setClawROpen();
 
 
 
         telemetry.update();
-//        sleep(30000);
+        sleep(10000);
     }
 }

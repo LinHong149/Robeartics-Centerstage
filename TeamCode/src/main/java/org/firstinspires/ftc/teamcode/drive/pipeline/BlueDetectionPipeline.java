@@ -76,6 +76,8 @@ public class BlueDetectionPipeline extends OpenCvPipeline {
             position = Position.CENTER;
         }
 
+
+
         return mask; // Return the processed frame
     }
 

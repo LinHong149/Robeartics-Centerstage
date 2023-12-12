@@ -9,7 +9,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
-
 @Autonomous(name="OpenCVTest", group="auton")
 public class OpenCVTest extends LinearOpMode {
     OpenCvCamera webcam;
