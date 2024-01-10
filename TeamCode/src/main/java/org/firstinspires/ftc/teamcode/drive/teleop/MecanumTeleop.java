@@ -44,8 +44,6 @@ public class MecanumTeleop extends LinearOpMode {
     double wristLParallel = 0.96-0.05;
     double wristRParallel = 0+0.05;
 
-
-    boolean intakeActive = false;
     double tempArmTarget = 0.0;
     double tempSlideTarget = 0.0;
 
@@ -229,7 +227,7 @@ public class MecanumTeleop extends LinearOpMode {
 
                     // auto wrist
                     if (slideTarget > 50) { // extended enough for claw
-                        // currArmPose = arm.getCurrentPosition();
+                        // currArmPose = arm.getCurrentPosition(); // change back once arm is fixed
                         currArmPose = armTarget;
                         if (currArmPose > armUpperLimit) {
                             adjustmentFactor = (currArmPose - armUpperLimit) * (adjustmentMultiplier);
@@ -250,10 +248,7 @@ public class MecanumTeleop extends LinearOpMode {
                     }
                     break;
             }
-
-
         }
-
         telemetry.update();
     }
 
