@@ -248,6 +248,7 @@ public class MecanumTeleop extends LinearOpMode {
                     if (gamepad2.right_bumper && gamepad2.left_bumper) {
                         mode = Mode.REST;
                     }
+                    break;
             }
 
 
