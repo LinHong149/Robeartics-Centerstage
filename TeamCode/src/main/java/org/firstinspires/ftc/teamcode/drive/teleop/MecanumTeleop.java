@@ -28,34 +28,29 @@ public class MecanumTeleop extends LinearOpMode {
     double clawROpen = 0.9;
     double clawLClose = 0.44;
     double clawRClose = 0.60;
-    boolean clawOpen = false;
-    boolean aPreviouslyPressed = false;
 
-    // double wristLOuttake = 0;
-    // double wristROuttake = 0.96;
-    // double wristLOuttake2 = 0+0.17;
-    // double wristROuttake2 = 0.96-0.17;
     double armUpperLimit = -1534;
     double armLowerLimit = -1773;
-    // double wristLOuttake = 0;
-    // double wristROuttake = 0;
     double currArmPose = 0;
     double adjustmentMultiplier = 0.17/-239;
     double adjustmentFactor = 0;
     double wristLParallel = 0.96-0.05;
     double wristRParallel = 0+0.05;
-    boolean wristParallel = false;
-    boolean bPreviouslyPressed = false;
+    boolean modeChangePressed = false;
 
+    boolean intakeActive = false;
+    int intakeMode = 1;
+    double tempArmTarget = 0.0;
+    double tempSlideTarget = 0.0;
 
     // Arm pidf
     public static PIDFController armPIDF = new PIDFController(0,0,0,0);
-    public static double armP = 0, armI = 0, armD = 0, armF = 0;
-    public static int armTarget = 0;
+    public static double armP = 0.012, armI = 0, armD = 0, armF = 0.00015;
+    public static double armTarget = 0.0; // limit 1900, 70
     // Slides pid
     public static PIDController slidePID = new PIDController(0,0,0);
     public static double slideP = 0.045, slideI = 0, slideD = 0;
-    public static int slideTarget = 670;
+    public static double slideTarget = 0.0; // limit 670
 
 
     // Initialize standard Hardware interfaces
@@ -71,7 +66,7 @@ public class MecanumTeleop extends LinearOpMode {
 
         // initialize vertically
         wristL.setPosition(0+0.35);
-        // wristR.setPosition(0.96-0.35);
+        wristR.setPosition(0.96-0.35);
 
         // Motors
         arm = hardwareMap.get(DcMotor.class, "arm");
@@ -80,13 +75,6 @@ public class MecanumTeleop extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl = hardwareMap.get(DcMotor.class, "bl");
         br = hardwareMap.get(DcMotor.class, "br");
-
-        arm.setPower(0);
-        slide.setPower(0);
-        fl.setPower(0);
-        fr.setPower(0);
-        bl.setPower(0);
-        br.setPower(0);
 
         arm.setDirection(DcMotor.Direction.REVERSE);
         slide.setDirection(DcMotor.Direction.FORWARD);
@@ -117,6 +105,13 @@ public class MecanumTeleop extends LinearOpMode {
         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        slide.setPower(0);
+        arm.setPower(armPIDF(0, arm));
+        fl.setPower(0);
+        fr.setPower(0);
+        bl.setPower(0);
+        br.setPower(0);
+
     }
 
     @Override
@@ -141,10 +136,10 @@ public class MecanumTeleop extends LinearOpMode {
 
             double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(rotate), 1);
 
-            double frontLeftPower = (drive + strafe + rotate) / denominator * 0.8;
-            double backLeftPower = (drive - strafe + rotate) / denominator * 0.8;
-            double frontRightPower = (drive - strafe - rotate) / denominator * 0.8;
-            double backRightPower = (drive + strafe - rotate) / denominator * 0.8;
+            double frontLeftPower = (drive + strafe + rotate) / denominator * 1.2;
+            double backLeftPower = (drive - strafe + rotate) / denominator * 1.2;
+            double frontRightPower = (drive - strafe - rotate) / denominator * 1.2;
+            double backRightPower = (drive + strafe - rotate) / denominator * 1.2;
 
             fr.setPower(frontRightPower);
             fl.setPower(frontLeftPower);
@@ -156,115 +151,97 @@ public class MecanumTeleop extends LinearOpMode {
             telemetry.addData("rotate","%.2f", rotate);
 
 
-
-
-            // //arm
-            // if(gamepad1.a){
-            //     arm.setPower(0.6);
-            // }
-            // else if (gamepad1.b){
-            //     arm.setPower(-0.6);
-            // }
-            // else {
-            //     arm.setPower(0);
-            // }
-
-            // //slide
-            // if(gamepad1.x){
-            //     slide.setPower(0.6);
-            // }
-            // else if (gamepad1.y){
-            //     slide.setPower(-0.6);
-            // }
-            // else {
-            //     slide.setPower(0);
-            // }
-
-
-
-            // toggle claw state
-            if (gamepad1.a && !aPreviouslyPressed) {
-                clawOpen = !clawOpen;
-            }
-            aPreviouslyPressed = gamepad1.a;
-
-
-            // move claw
-            if (clawOpen) {
-                clawL.setPosition(clawLOpen);
-                clawR.setPosition(clawROpen);
-            } else if (!clawOpen) {
-                clawL.setPosition(clawLClose);
-                clawR.setPosition(clawRClose);
-            }
-
-
-            // // toggle wrist state
-            // if (gamepad1.b && !bPreviouslyPressed) {
-            //     wristParallel = !wristParallel;
-            // }
-            // bPreviouslyPressed = gamepad1.b;
-
-
-            // // move wrist
-            // if (wristParallel) {
-            //     wristL.setPosition(wristLOuttake2);
-            //     wristR.setPosition(wristROuttake2);
-            // } else if (!wristParallel) {
-            //     wristL.setPosition(wristLOuttake);
-            //     wristR.setPosition(wristROuttake);
-            // }
-
-
-            // arm
-            arm.setPower(armPIDF(armTarget, arm));
             slide.setPower(slidePID(slideTarget, slide));
-
-//            // arm movement with PID
-//            if (gamepad1.right_trigger > 0 && lSlide.getCurrentPosition() < 720) {
-//                telemetry.addData("dpad_up", "active");
-//                telemetry.update();
-//                lSlide.setPower(0.4);
-//                rSlide.setPower(0.4);
-//            } else if (gamepad1.left_trigger > 0 && lSlide.getCurrentPosition() > 0) {
-//                lSlide.setPower(-0.25);
-//                rSlide.setPower(-0.25);
-//
-//            } else {
-//                if (gamepad1.right_trigger > 0) { // Prevent jittering
-//                    lSlide.setPower(0.15);
-//                    rSlide.setPower(0.15);
-//                } else {
-//                    lSlide.setPower(0);
-//                    rSlide.setPower(0);
-//                }
-//            }
+            arm.setPower(armPIDF(armTarget, arm));
 
 
-            // automatic 30deg claw
-            currArmPose = arm.getCurrentPosition();
-            if (currArmPose <= armUpperLimit-1) {
-                adjustmentFactor = (currArmPose - armUpperLimit) * (adjustmentMultiplier);
-                wristL.setPosition(0+adjustmentFactor);
+            //-------------------------------------Going to outtake mode----------------------------------------------
+            if (gamepad1.right_bumper && gamepad1.left_bumper && !modeChangePressed) {
+                intakeMode = (intakeMode + 1) % 2;
+                if (intakeMode == 0) { // Outtaking
+                    armTarget = 1500;
+                    slideTarget = 500;
+                } else if (intakeMode == 1) { // Intaking
+                    armTarget = 30;
+                    slideTarget = 10;
+                }
+                modeChangePressed = true;
+            } else if (!gamepad1.right_bumper && !gamepad1.left_bumper && modeChangePressed) {
+                modeChangePressed = false;
             }
-            // add limit
+
+            telemetry.addData("mode", intakeMode);
 
 
+            switch (intakeMode) {
+                case 0:
+                    telemetry.addData("mode", "running false");
+                    // allow slide and angle to change
+                    tempArmTarget = armTarget + (gamepad1.right_trigger - gamepad1.left_trigger) * 0.02;
+                    if (tempArmTarget > 10 && tempArmTarget < 1800) {
+                        armTarget = tempArmTarget;
+                    }
 
-            telemetry.addData("Arm pose" , arm.getCurrentPosition());
-            // telemetry.addData("WristL pose", 0+adjustmentFactor);
-            // telemetry.addData("WristR pose", 0.96-adjustmentFactor);
-            telemetry.addData("adjustmentMultiplier", adjustmentMultiplier);
-            telemetry.addData("part1", currArmPose - armUpperLimit);
-            telemetry.addData("adjustmentFactor", adjustmentFactor);
+                    tempSlideTarget = slideTarget + (gamepad1.right_bumper ? 0.02 : 0) - (gamepad1.left_bumper ? 0.02 : 0);
+                    if (tempSlideTarget > 10 && tempSlideTarget < 670) {
+                        slideTarget = tempSlideTarget;
+                    }
+                    telemetry.addData("armTarget", armTarget);
+                    telemetry.addData("slideTarget", slideTarget);
 
+                    // extend slide and angle arm target
 
+                    // wrist adjustment after slide extend
+                    if (slideTarget > 50) { // extended enough for claw
+                        // currArmPose = arm.getCurrentPosition();
+                        currArmPose = armTarget;
+                        if (currArmPose > armUpperLimit) {
+                            adjustmentFactor = (currArmPose - armUpperLimit) * (adjustmentMultiplier);
+                            wristL.setPosition(0+adjustmentFactor);
+                            // wristR.setPosition(0.96-adjustmentFactor);
+                        }
+                        telemetry.addData("adjustmentFactor", adjustmentFactor);
+                        telemetry.addData("wristL", wristL.getPosition());
+                        // telemetry.addData("wristR", wristR.getPosition());
+                    }
+                    else {
+                        // Perpendicular
+                        wristL.setPosition(0+0.35);
+                        wristR.setPosition(0.96-0.35);
+                    }
+
+                    // if a, open claw
+                    if (gamepad1.a) {
+                        clawL.setPosition(clawLOpen);
+                        clawR.setPosition(clawROpen);
+                    }
+                    break;
+
+                case 1:
+                    telemetry.addData("mode", "running true");
+                    if (gamepad1.right_bumper && !gamepad1.left_bumper && !intakeActive) {
+                        telemetry.addData("mode", "intake");
+                        wristL.setPosition(wristLParallel);
+                        wristR.setPosition(wristRParallel);
+                        clawL.setPosition(clawLOpen);
+                        clawR.setPosition(clawROpen);
+                        slideTarget = 400.0;
+                        intakeActive = true;
+                    } else if (!gamepad1.right_bumper && intakeActive) {
+                        telemetry.addData("mode", "rest");
+                        clawL.setPosition(clawLClose);
+                        clawR.setPosition(clawRClose);
+                        slideTarget = 10.0;
+                        intakeActive = false;
+                    }
+                    break;
+            }
 
             telemetry.update();
         }
     }
 
-    public double armPIDF(int target, DcMotor motor){
+    public double armPIDF(double target, DcMotor motor){
         armPIDF.setPIDF(armP,armI,armD,armF);
         int currentPosition = motor.getCurrentPosition();
         double output = armPIDF.calculate(currentPosition, target);
@@ -274,7 +251,7 @@ public class MecanumTeleop extends LinearOpMode {
         telemetry.update();
         return output;
     }
-    public double slidePID(int target, DcMotor motor){
+    public double slidePID(double target, DcMotor motor){
         slidePID.setPID(slideP, slideI, slideD);
         int currentPosition = motor.getCurrentPosition();
         double output = slidePID.calculate(currentPosition, target);
