@@ -2,10 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -15,11 +12,10 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 @Config
 @TeleOp(name="MecanumTeleopTwoDrivers", group="Mecanum")
-public class MecanumTeleop extends LinearOpMode {
+public class TeleopTwoDrivers extends LinearOpMode {
 
     private ElapsedTime runTime = new ElapsedTime();
     private ElapsedTime delay = new ElapsedTime();
@@ -33,8 +29,8 @@ public class MecanumTeleop extends LinearOpMode {
 
     double clawLOpen = 0.1;
     double clawROpen = 0.9;
-    double clawLClose = 0.44;
-    double clawRClose = 0.60;
+    double clawLClose = 0.1+34;
+    double clawRClose = 0.9-34;
 
     double armUpperLimit = 1534;
     double armLowerLimit = 1773;
@@ -43,9 +39,13 @@ public class MecanumTeleop extends LinearOpMode {
     double adjustmentFactor = 0;
     double wristLParallel = 0.96-0.05;
     double wristRParallel = 0+0.05;
+    double wristLUp = 0+0.35;
+    double wristRUp = 0.96-0.35;
 
     double tempArmTarget = 0.0;
     double tempSlideTarget = 0.0;
+
+    boolean RBNotPressed = true;
 
     public enum Mode {
         REST,
@@ -119,7 +119,7 @@ public class MecanumTeleop extends LinearOpMode {
         br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         slide.setPower(0);
-        arm.setPower(armPIDF(50, arm));
+        arm.setPower(0);
         fl.setPower(0);
         fr.setPower(0);
         bl.setPower(0);
@@ -158,34 +158,37 @@ public class MecanumTeleop extends LinearOpMode {
             br.setPower(backRightPower);
             bl.setPower(backLeftPower);
 
-            telemetry.addData("strafe","%.2f", strafe);
-            telemetry.addData("drive","%.2f", drive);
-            telemetry.addData("rotate","%.2f", rotate);
-
             // Drone
             if (gamepad1.x && runTime.seconds() > 120) { // endGame
                 drone.setPosition(droneLaunch);
             }
 
             // Arm and Slide PID
-            slide.setPower(slidePID(slideTarget, slide));
-            arm.setPower(armPIDF(armTarget, arm));
+            if (slideTarget < 670 && slideTarget > 20) {
+                slide.setPower(slidePID(slideTarget, slide));
+            }
+            if (armTarget < 1900 && armTarget > 10) {
+                arm.setPower(armPIDF(armTarget, arm));
+            }
             telemetry.addData("armTarget", armTarget);
             telemetry.addData("slideTarget", slideTarget);
 
+            telemetry.addData("mode", mode);
+            telemetry.addData("delay", delay);
             // Mode: REST, INTAKING, OUTTAKING
             switch (mode) {
                 case REST:
+                    RBNotPressed = true;
                     armTarget = 30;
                     slideTarget = 30;
+                    wristL.setPosition(wristLUp);
+                    wristR.setPosition(wristRUp);
                     clawL.setPosition(clawLClose);
                     clawR.setPosition(clawRClose);
-                    wristL.setPosition(wristLParallel);
-                    wristR.setPosition(wristRParallel);
 
                     if (gamepad1.right_bumper) {
                         mode = Mode.INTAKING;
-                    } else if (gamepad2.right_bumper && gamepad2.left_bumper) {
+                    } else if (gamepad2.right_bumper && gamepad2.left_bumper && delay.seconds() >= 0.5) {
                         mode = Mode.OUTTAKING;
                         armTarget = armUpperLimit;
                         delay.reset();
@@ -193,31 +196,36 @@ public class MecanumTeleop extends LinearOpMode {
                     break;
 
                 case INTAKING:
-                    armTarget = 30;
-                    slideTarget = 500;
-                    clawL.setPosition(clawLOpen);
-                    clawR.setPosition(clawROpen);
-                    wristL.setPosition(wristLParallel);
-                    wristR.setPosition(wristRParallel);
+                    if (gamepad1.right_bumper) {
+                        armTarget = 30;
+                        slideTarget = 620;
+                        clawL.setPosition(clawLOpen);
+                        clawR.setPosition(clawROpen);
+                        wristL.setPosition(wristLParallel);
+                        wristR.setPosition(wristRParallel);
+                    }
                     if (!gamepad1.right_bumper) {
-                        mode = Mode.REST;
+                        if (RBNotPressed) {
+                            delay.reset();
+                            RBNotPressed = false;
+                            clawL.setPosition(clawLClose);
+                            clawR.setPosition(clawRClose);
+                        }
+                        if (delay.seconds() >= 0.5) {
+                            mode = Mode.REST;
+                        }
                     }
                     break;
 
                 case OUTTAKING:
-                    if (delay.seconds() == 2) {
+                    if (delay.seconds() > 1 && delay.seconds() < 1.1) {
                         slideTarget = 600;
                     }
 
-                    tempArmTarget = armTarget + (gamepad2.right_trigger - gamepad2.left_trigger) * 0.02;
-                    if (tempArmTarget > 10 && tempArmTarget < 1900) {
-                        armTarget = tempArmTarget;
-                    }
-
-                    tempSlideTarget = slideTarget + gamepad2.left_stick_y * 0.02;
-                    if (tempSlideTarget > 50 && tempSlideTarget < 670) {
-                        slideTarget = tempSlideTarget;
-                    }
+                    telemetry.addData("controlledArmTarget", armTarget + (gamepad2.right_trigger - gamepad2.left_trigger) * 0.02);
+                    telemetry.addData("controlledSlideTarget", slideTarget + gamepad2.left_stick_y * 0.02);
+                    armTarget = armTarget + (gamepad2.right_trigger - gamepad2.left_trigger) * 0.02;
+                    slideTarget = slideTarget + gamepad2.left_stick_y * 0.02;
 
                     // claw
                     if (gamepad2.a) {
@@ -226,9 +234,9 @@ public class MecanumTeleop extends LinearOpMode {
                     }
 
                     // auto wrist
-                    if (slideTarget > 50) { // extended enough for claw
-                        // currArmPose = arm.getCurrentPosition(); // change back once arm is fixed
-                        currArmPose = armTarget;
+                    if (slideTarget > 100) { // extended enough for claw
+                         currArmPose = arm.getCurrentPosition(); // change back once arm is fixed
+//                        currArmPose = armTarget;
                         if (currArmPose > armUpperLimit) {
                             adjustmentFactor = (currArmPose - armUpperLimit) * (adjustmentMultiplier);
                             wristL.setPosition(0+adjustmentFactor);
@@ -242,9 +250,9 @@ public class MecanumTeleop extends LinearOpMode {
                         wristR.setPosition(0.96-0.35);
                     }
 
-
-                    if (gamepad2.right_bumper && gamepad2.left_bumper) {
+                    if (gamepad2.right_bumper && gamepad2.left_bumper && delay.seconds() >= 0.5) {
                         mode = Mode.REST;
+                        delay.reset();
                     }
                     break;
             }
