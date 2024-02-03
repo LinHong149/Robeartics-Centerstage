@@ -1,0 +1,2 @@
+0 NO_PIXEL
+1 PIXEL

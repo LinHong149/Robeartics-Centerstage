@@ -18,6 +18,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package org.firstinspires.ftc.teamcode.drive.pipeline;
 
 import org.opencv.calib3d.Calib3d;
@@ -80,7 +81,6 @@ public class AprilTagPipeline extends OpenCvPipeline {
         // Allocate a native context object. See the corresponding deletion in the finalizer
         nativeApriltagPtr = AprilTagDetectorJNI.createApriltagDetector(AprilTagDetectorJNI.TagFamily.TAG_36h11.string, 3, 3);
     }
-
 
     @Override
     public void finalize()

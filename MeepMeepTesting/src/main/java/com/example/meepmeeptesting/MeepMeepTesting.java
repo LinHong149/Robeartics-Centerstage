@@ -10,65 +10,277 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
-        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+        RoadRunnerBotEntity redLeftRight = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive ->
-//                        // RED RIGHT : LEFT
-//                            drive.trajectorySequenceBuilder(new Pose2d(12, -62, Math.toRadians(180)))
-//                                    // Traj 1
-//                                    .strafeRight(32)
-//                                    .addDisplacementMarker(() -> {}) // place on left spike mark
-//                                    .back(30)
-//                                    .addDisplacementMarker(() -> {}) // score on backdrop
-//                                    .strafeRight(22)
-//                                    .forward(100)
-//                                    .back(100)
-//                                    .strafeLeft(22)
-//                                    .build()
+                .followTrajectorySequence(drive -> {
+
+                    Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
 
 
-                        // RED RIGHT : MIDDLE
-                        drive.trajectorySequenceBuilder(new Pose2d(12, -62, Math.toRadians(180)))
-                                // Traj 1
-                                .lineToConstantHeading(new Vector2d(12, -30))
-                                .lineToLinearHeading(new Pose2d(36, -30, Math.toRadians(0)))
-                                .splineTo(new Vector2d(16, -10), Math.toRadians(180))
-                                .splineTo(new Vector2d(-56, -10), Math.toRadians(180))
+                    return drive.trajectorySequenceBuilder(startPose)
+                            .splineToLinearHeading(new Pose2d(-38, -30, Math.toRadians(0)), Math.toRadians(90))
+
+                            .addDisplacementMarker(() -> {
+                                // drop purple pixel
+                            })
+
+                            .setTangent(1.5)
+                            .splineToConstantHeading(new Vector2d(-30, -9), Math.toRadians(0))
+                            .splineToSplineHeading(new Pose2d(44, -37, Math.toRadians(180)), Math.toRadians(270))
+
+                            .addDisplacementMarker(() -> {
+                                // drop yellow pixel
+                            })
+
+//                            .splineToSplineHeading(new Pose2d(-36, -14, Math.toRadians(180)), Math.toRadians(190))
+                            .setReversed(false)
+                            .setTangent(1.5)
+                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(180))
+                            .splineToConstantHeading(new Vector2d(-36, -13), Math.toRadians(180))
+
+                            .addDisplacementMarker(() -> {
+                                // grab from pixel stack
+                            })
+
+                            .setReversed(true)
+//                            .setTangent(0.2)
+//                            .splineToSplineHeading(new Pose2d(44, -36, Math.toRadians(0)), Math.toRadians(270))
+                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(0))
+                            .splineToConstantHeading(new Vector2d(44, -36), Math.toRadians(270))
+
+                            .build();
+
+                });
+
+        RoadRunnerBotEntity redLeftLeft = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive -> {
+
+                    Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
 
 
-                                .setReversed(true).splineTo(new Vector2d(16, -10), Math.toRadians(0))
-                                .splineTo(new Vector2d(36, -30), Math.toRadians(180))
-                                .build()
+                    return drive.trajectorySequenceBuilder(startPose)
+                            .splineToLinearHeading(new Pose2d(-34, -30, Math.toRadians(180)), Math.toRadians(90))
 
-                            // RED LEFT
-//                            drive.trajectorySequenceBuilder(new Pose2d(-35, -62, Math.toRadians(270)))
-//                                    // Traj 1
-//                                    .lineToLinearHeading(new Pose2d(-50, -46, Math.toRadians(0))) // x value (-58, -50, -36)
-//                                    .strafeLeft(16)
-//                                    .addDisplacementMarker(() -> {
-//                                        // Open Claw
-//                                    })
-//                                    .strafeLeft(18)
-//                                    .forward(78) // (86, 78, 64)
-//                                    .lineToSplineHeading(new Pose2d(48, -29, Math.toRadians(180)))
+                            .addDisplacementMarker(() -> {
+                                // drop purple pixel
+                            })
+
+                            .setTangent(1.5)
+                            .splineToConstantHeading(new Vector2d(-26, -9), Math.toRadians(0))
+                            .splineToConstantHeading(new Vector2d(44, -37), Math.toRadians(270))
+
+                            .addDisplacementMarker(() -> {
+                                // drop yellow pixel
+                            })
+
+//                            .splineToSplineHeading(new Pose2d(-36, -14, Math.toRadians(180)), Math.toRadians(190))
+                            .setReversed(false)
+                            .setTangent(1.5)
+                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(180))
+                            .splineToConstantHeading(new Vector2d(-36, -13), Math.toRadians(180))
+
+                            .addDisplacementMarker(() -> {
+                                // grab from pixel stack
+                            })
+
+                            .setReversed(true)
+//                            .setTangent(0.2)
+//                            .splineToSplineHeading(new Pose2d(44, -36, Math.toRadians(0)), Math.toRadians(270))
+                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(0))
+                            .splineToConstantHeading(new Vector2d(44, -36), Math.toRadians(270))
+
+                            .build();
+
+                });
+
+        RoadRunnerBotEntity redLeftMiddle = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive -> {
+
+                    Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
+
+
+                    return drive.trajectorySequenceBuilder(startPose)
+                            .splineToLinearHeading(new Pose2d(-52, -26, Math.toRadians(0)), Math.toRadians(90))
+
+                            .addDisplacementMarker(() -> {
+                                // drop purple pixel
+                            })
+
+                            .setTangent(1.5)
+                            .splineToConstantHeading(new Vector2d(-44, -9), Math.toRadians(0))
+                            .splineToSplineHeading(new Pose2d(44, -37, Math.toRadians(180)), Math.toRadians(270))
+
+                            .addDisplacementMarker(() -> {
+                                // drop yellow pixel
+                            })
+
+//                            .splineToSplineHeading(new Pose2d(-36, -14, Math.toRadians(180)), Math.toRadians(190))
+                            .setReversed(false)
+                            .setTangent(1.5)
+                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(180))
+                            .splineToConstantHeading(new Vector2d(-36, -13), Math.toRadians(180))
+
+                            .addDisplacementMarker(() -> {
+                                // grab from pixel stack
+                            })
+
+                            .setReversed(true)
+//                            .setTangent(0.2)
+//                            .splineToSplineHeading(new Pose2d(44, -36, Math.toRadians(0)), Math.toRadians(270))
+                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(0))
+                            .splineToConstantHeading(new Vector2d(44, -36), Math.toRadians(270))
+
+                            .build();
+
+                });
+
+
+//        RoadRunnerBotEntity redRightRight = new DefaultBotBuilder(meepMeep)
+//                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+//                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+//                .followTrajectorySequence(drive -> {
 //
-//                                    .addDisplacementMarker(() -> {}) // Traj 2
+//                    Pose2d startPose = new Pose2d(14, -62, Math.toRadians(90));
 //
-//                                    .lineToConstantHeading(new Vector2d(28, -12))
-//                                    .forward(86)
 //
-//                                    .addDisplacementMarker(() -> {}) // Trag 3
-//                                    .back(86)
-//                                    .lineTo(new Vector2d(48, -30))
+//                    return drive.trajectorySequenceBuilder(startPose)
+//                            //RED RIGHT RIGHT
+//                            .splineToLinearHeading(new Pose2d(36, -28, Math.toRadians(180)), Math.toRadians(90))
 //
-//                                    .build()
-                );
+//                            .addDisplacementMarker(() -> {
+//                                // drop purple pixel
+//                            })
+//
+//                            .setReversed(true)
+////                            .splineToSplineHeading(new Pose2d(44, -43, Math.toRadians(0)), Math.toRadians(90))
+//                            .splineToConstantHeading(new Vector2d(44, -43), Math.toRadians(270))
+//
+//                            .addDisplacementMarker(() -> {
+//                                // drop yellow pixel
+//                            })
+//
+////                            .splineToSplineHeading(new Pose2d(-36, -14, Math.toRadians(180)), Math.toRadians(190))
+//                            .setReversed(false)
+//                            .setTangent(1.5)
+//                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(180))
+//                            .splineToConstantHeading(new Vector2d(-36, -13), Math.toRadians(180))
+//
+//                            .addDisplacementMarker(() -> {
+//                                // grab from pixel stack
+//                            })
+//
+//                            .setReversed(true)
+////                            .setTangent(0.2)
+////                            .splineToSplineHeading(new Pose2d(44, -36, Math.toRadians(0)), Math.toRadians(270))
+//                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(0))
+//                            .splineToConstantHeading(new Vector2d(44, -36), Math.toRadians(270))
+//
+//                            .build();
+//
+//                });
+//
+//        RoadRunnerBotEntity redRightLeft = new DefaultBotBuilder(meepMeep)
+//                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+//                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+//                .followTrajectorySequence(drive -> {
+//
+//                    Pose2d startPose = new Pose2d(14, -62, Math.toRadians(90));
+//
+//
+//                    return drive.trajectorySequenceBuilder(startPose)
+//                            //RED RIGHT LEFT
+//                            .splineToLinearHeading(new Pose2d(16, -28, Math.toRadians(180)), Math.toRadians(180))
+//
+//                            .addDisplacementMarker(() -> {
+//                                // drop purple pixel
+//                            })
+//
+//                            .setReversed(true)
+////                            .splineToSplineHeading(new Pose2d(44, -31, Math.toRadians(0)), Math.toRadians(90))
+//                            .splineToConstantHeading(new Vector2d(44, -31), Math.toRadians(90))
+//
+//                            .addDisplacementMarker(() -> {
+//                                // drop yellow pixel
+//                            })
+//
+////                            .splineToSplineHeading(new Pose2d(-36, -14, Math.toRadians(180)), Math.toRadians(190))
+//                            .setReversed(false)
+//                            .setTangent(1.5)
+//                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(180))
+//                            .splineToConstantHeading(new Vector2d(-36, -13), Math.toRadians(180))
+//
+//                            .addDisplacementMarker(() -> {
+//                                // grab from pixel stack
+//                            })
+//
+//                            .setReversed(true)
+////                            .setTangent(0.2)
+////                            .splineToSplineHeading(new Pose2d(44, -36, Math.toRadians(0)), Math.toRadians(270))
+//                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(0))
+//                            .splineToConstantHeading(new Vector2d(44, -36), Math.toRadians(270))
+//
+//                            .build();
+//
+//                });
+//
+//        RoadRunnerBotEntity redRightMiddle = new DefaultBotBuilder(meepMeep)
+//                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+//                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+//                .followTrajectorySequence(drive -> {
+//
+//                    Pose2d startPose = new Pose2d(14, -62, Math.toRadians(90));
+//
+//
+//                    return drive.trajectorySequenceBuilder(startPose)
+//                            // RED RIGHT MIDDLE
+//                            .splineToLinearHeading(new Pose2d(16, -36, Math.toRadians(90)), Math.toRadians(0))
+//
+//                            .addDisplacementMarker(() -> {
+//                                // drop purple pixel
+//                            })
+//                            .splineToSplineHeading(new Pose2d(44, -37, Math.toRadians(180)), Math.toRadians(90))
+////                            .splineToConstantHeading(new Vector2d(44, -37), Math.toRadians(90))
+//
+//                            .addDisplacementMarker(() -> {
+//                                // drop yellow pixel
+//                            })
+//
+////                            .splineToSplineHeading(new Pose2d(-36, -14, Math.toRadians(180)), Math.toRadians(190))
+//                            .setReversed(false)
+//                            .setTangent(1.5)
+//                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(180))
+//                            .splineToConstantHeading(new Vector2d(-36, -13), Math.toRadians(180))
+//
+//                            .addDisplacementMarker(() -> {
+//                                // grab from pixel stack
+//                            })
+//
+//                            .setReversed(true)
+////                            .setTangent(0.2)
+////                            .splineToSplineHeading(new Pose2d(44, -36, Math.toRadians(0)), Math.toRadians(270))
+//
+//                            .splineToConstantHeading(new Vector2d(16, -13), Math.toRadians(0))
+//                            .splineToConstantHeading(new Vector2d(44, -36), Math.toRadians(270))
+//
+//                            .build();
+//
+//                });
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(myBot)
+                .addEntity(redLeftRight)
+//                .addEntity(redLeftLeft)
+//                .addEntity(redLeftMiddle)
+//                .addEntity(redRightRight)
+//                .addEntity(redRightLeft)
+//                .addEntity(redRightMiddle)
                 .start();
+
     }
 }

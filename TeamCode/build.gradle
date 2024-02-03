@@ -32,3 +32,20 @@ dependencies {
     implementation 'com.acmerobotics.roadrunner:core:0.5.6'
     implementation 'org.ftclib.ftclib:core:2.1.1'
 }
+
+
+//t265 tracking
+repositories {
+    maven { url = "https://maven.catboy.camp" }
+    maven { url = 'https://maven.brott.dev/' }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.spartronics4915.lib:ftc265:2.1.9'
+    implementation 'org.openftc:easyopencv:1.7.0'
+    implementation 'org.tensorflow:tensorflow-lite:2.12.0'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
+    implementation 'org.openftc:apriltag:2.0.0'
+    implementation 'com.acmerobotics.dashboard:dashboard:0.4.14'
+}

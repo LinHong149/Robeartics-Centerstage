@@ -17,7 +17,6 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 @TeleOp(name="MecanumTeleopTwoDrivers", group="Mecanum")
 public class TeleopTwoDrivers extends LinearOpMode {
 
-    private ElapsedTime runTime = new ElapsedTime();
     private ElapsedTime delay = new ElapsedTime();
 
     // Declare servos and motors
@@ -29,21 +28,22 @@ public class TeleopTwoDrivers extends LinearOpMode {
 
     double clawLOpen = 0.1;
     double clawROpen = 0.9;
-    double clawLClose = 0.1+34;
-    double clawRClose = 0.9-34;
+    double clawLClose = 0.1+3.6;
+    double clawRClose = 0.9-3.6;
 
     double armUpperLimit = 1534;
     double armLowerLimit = 1773;
     double currArmPose = 0;
-    double adjustmentMultiplier = 0.17/239;
+    double adjustmentMultiplier = 0.14/239; // 0.17/239
     double adjustmentFactor = 0;
-    double wristLParallel = 0.96-0.05;
-    double wristRParallel = 0+0.05;
+    double wristLParallel = 0.96-0.052;
+    double wristRParallel = 0+0.052;
     double wristLUp = 0+0.35;
     double wristRUp = 0.96-0.35;
 
     double tempArmTarget = 0.0;
     double tempSlideTarget = 0.0;
+    double slidePowerAdjustment = 0.7;
 
     boolean RBNotPressed = true;
 
@@ -159,16 +159,16 @@ public class TeleopTwoDrivers extends LinearOpMode {
             bl.setPower(backLeftPower);
 
             // Drone
-            if (gamepad1.x && runTime.seconds() > 120) { // endGame
+            if (gamepad1.x) { // endGame
                 drone.setPosition(droneLaunch);
             }
 
             // Arm and Slide PID
             if (slideTarget < 670 && slideTarget > 20) {
-                slide.setPower(slidePID(slideTarget, slide));
+                slide.setPower(slidePID(slideTarget, slide) * slidePowerAdjustment * 0.6);
             }
-            if (armTarget < 1900 && armTarget > 10) {
-                arm.setPower(armPIDF(armTarget, arm));
+            if (armTarget < 1900 && armTarget > 0) {
+                arm.setPower(armPIDF(armTarget, arm) * 0.6);
             }
             telemetry.addData("armTarget", armTarget);
             telemetry.addData("slideTarget", slideTarget);
@@ -179,16 +179,20 @@ public class TeleopTwoDrivers extends LinearOpMode {
             switch (mode) {
                 case REST:
                     RBNotPressed = true;
-                    armTarget = 30;
+                    armTarget = 120;
                     slideTarget = 30;
+
                     wristL.setPosition(wristLUp);
                     wristR.setPosition(wristRUp);
                     clawL.setPosition(clawLClose);
                     clawR.setPosition(clawRClose);
 
-                    if (gamepad1.right_bumper) {
+                    if (gamepad1.right_bumper || gamepad1.left_bumper) {
+                        slidePowerAdjustment = 0.7;
                         mode = Mode.INTAKING;
+                        delay.reset();
                     } else if (gamepad2.right_bumper && gamepad2.left_bumper && delay.seconds() >= 0.5) {
+                        slidePowerAdjustment = 0.7;
                         mode = Mode.OUTTAKING;
                         armTarget = armUpperLimit;
                         delay.reset();
@@ -196,36 +200,49 @@ public class TeleopTwoDrivers extends LinearOpMode {
                     break;
 
                 case INTAKING:
-                    if (gamepad1.right_bumper) {
-                        armTarget = 30;
-                        slideTarget = 620;
+
+                    telemetry.addData("controlledArmTarget",  (gamepad2.left_trigger - gamepad2.right_trigger) * 2);
+//                    telemetry.addData("controlledSlideTarget",  gamepad2.left_stick_y * 2);
+                    armTarget = armTarget - (gamepad2.left_trigger - gamepad2.right_trigger) * 2;
+//                    slideTarget = slideTarget - gamepad2.left_stick_y * 2;
+
+                    if (gamepad1.right_bumper || gamepad1.left_bumper) {
+                        if (delay.seconds() > 0.2 && delay.seconds() < 0.3) {
+                            armTarget = 40;
+                        }
+                        if (gamepad1.right_bumper) {
+                            slideTarget = 620;
+                        } else if (gamepad1.left_bumper) {
+                            slideTarget = 400;
+                        }
                         clawL.setPosition(clawLOpen);
                         clawR.setPosition(clawROpen);
                         wristL.setPosition(wristLParallel);
                         wristR.setPosition(wristRParallel);
                     }
-                    if (!gamepad1.right_bumper) {
+                    if (!gamepad1.right_bumper && !gamepad1.left_bumper) {
                         if (RBNotPressed) {
-                            delay.reset();
+                            slidePowerAdjustment = 0.1;
                             RBNotPressed = false;
+                            delay.reset();
                             clawL.setPosition(clawLClose);
                             clawR.setPosition(clawRClose);
                         }
-                        if (delay.seconds() >= 0.5) {
+                        if (delay.seconds() >= 0.8) {
                             mode = Mode.REST;
                         }
                     }
                     break;
 
                 case OUTTAKING:
-                    if (delay.seconds() > 1 && delay.seconds() < 1.1) {
-                        slideTarget = 600;
+                    if (delay.seconds() > 0.9 && delay.seconds() < 1) {
+                        slideTarget = 200;
                     }
 
-                    telemetry.addData("controlledArmTarget", armTarget + (gamepad2.right_trigger - gamepad2.left_trigger) * 0.02);
-                    telemetry.addData("controlledSlideTarget", slideTarget + gamepad2.left_stick_y * 0.02);
-                    armTarget = armTarget + (gamepad2.right_trigger - gamepad2.left_trigger) * 0.02;
-                    slideTarget = slideTarget + gamepad2.left_stick_y * 0.02;
+                    telemetry.addData("controlledArmTarget",  (gamepad2.left_trigger - gamepad2.right_trigger) * 5);
+                    telemetry.addData("controlledSlideTarget",  gamepad2.left_stick_y * 5);
+                    armTarget = armTarget + (gamepad2.left_trigger - gamepad2.right_trigger) * 5;
+                    slideTarget = slideTarget - gamepad2.left_stick_y * 5;
 
                     // claw
                     if (gamepad2.a) {
@@ -234,23 +251,34 @@ public class TeleopTwoDrivers extends LinearOpMode {
                     }
 
                     // auto wrist
-                    if (slideTarget > 100) { // extended enough for claw
-                         currArmPose = arm.getCurrentPosition(); // change back once arm is fixed
-//                        currArmPose = armTarget;
-                        if (currArmPose > armUpperLimit) {
-                            adjustmentFactor = (currArmPose - armUpperLimit) * (adjustmentMultiplier);
-                            wristL.setPosition(0+adjustmentFactor);
-                             wristR.setPosition(0.96-adjustmentFactor);
+                    if (delay.seconds() > 1.1) {
+                        if (slideTarget > 100) { // extended enough for claw
+                            currArmPose = arm.getCurrentPosition(); // change back once arm is fixed
+                            if (currArmPose > armUpperLimit) {
+                                adjustmentFactor = (currArmPose - armUpperLimit) * (adjustmentMultiplier);
+                                wristL.setPosition(0+adjustmentFactor);
+                                wristR.setPosition(0.96-adjustmentFactor);
+                            }
+                            telemetry.addData("adjustmentFactor", adjustmentFactor);
                         }
-                        telemetry.addData("adjustmentFactor", adjustmentFactor);
-                    }
-                    else {
-                        // Perpendicular
-                        wristL.setPosition(0+0.35);
-                        wristR.setPosition(0.96-0.35);
+                        else {
+                            // Perpendicular
+                            wristL.setPosition(0+0.35);
+                            wristR.setPosition(0.96-0.35);
+                        }
                     }
 
-                    if (gamepad2.right_bumper && gamepad2.left_bumper && delay.seconds() >= 0.5) {
+                    if (gamepad2.right_bumper && gamepad2.left_bumper && delay.seconds() >= 0.5) { // prevent double click
+                        slidePowerAdjustment = 0.1;
+                        delay.reset();
+                        RBNotPressed = false;
+                        slideTarget = 30;
+                        clawL.setPosition(clawLClose);
+                        clawR.setPosition(clawRClose);
+                        wristL.setPosition(wristLUp);
+                        wristR.setPosition(wristRUp);
+                    }
+                    if (delay.seconds() >= 0.6 && !RBNotPressed) {
                         mode = Mode.REST;
                         delay.reset();
                     }
@@ -265,9 +293,9 @@ public class TeleopTwoDrivers extends LinearOpMode {
         int currentPosition = motor.getCurrentPosition();
         double output = armPIDF.calculate(currentPosition, target);
 
-        telemetry.addData("arm current position: ", currentPosition);
-        telemetry.addData("arm target: ", target);
-        telemetry.update();
+//        telemetry.addData("arm current position: ", currentPosition);
+//        telemetry.addData("arm target: ", target);
+//        telemetry.update();
         return output;
     }
     public double slidePID(double target, DcMotor motor){
@@ -275,9 +303,9 @@ public class TeleopTwoDrivers extends LinearOpMode {
         int currentPosition = motor.getCurrentPosition();
         double output = slidePID.calculate(currentPosition, target);
 
-        telemetry.addData("slide current position: ", currentPosition);
-        telemetry.addData("slide target: ", target);
-        telemetry.update();
+//        telemetry.addData("slide current position: ", currentPosition);
+//        telemetry.addData("slide target: ", target);
+//        telemetry.update();
         return output;
     }
 }
