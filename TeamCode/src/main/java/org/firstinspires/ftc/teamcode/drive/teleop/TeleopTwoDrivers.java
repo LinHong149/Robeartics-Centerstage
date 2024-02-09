@@ -20,30 +20,34 @@ public class TeleopTwoDrivers extends LinearOpMode {
     private ElapsedTime delay = new ElapsedTime();
 
     // Declare servos and motors
-    public Servo clawL = null, clawR = null, wristL = null, wristR = null, drone = null;
+    public Servo clawL = null, clawR = null, wristL = null, wristR = null, droneAngle = null, droneRelease = null;
     public DcMotor arm, slide, fl, fr, bl, br;
 
-    double droneRest = 0.3;
-    double droneLaunch = 0.6;
+    double droneAngleRest = 0;
+    double droneAngleActive = 0.4;
+    double droneReleaseRest = 0.3;
+    double droneReleaseActive = 0.5;
 
-    double clawLOpen = 0.1;
-    double clawROpen = 0.9;
-    double clawLClose = 0.1+3.6;
-    double clawRClose = 0.9-3.6;
+    double clawLOpen = 0;
+    double clawROpen = 1;
+    double clawLClose = 0.6;
+    double clawRClose = 0.4;
 
-    double armUpperLimit = 1534;
-    double armLowerLimit = 1773;
+    double armUpperLimit = 1420;
+    double armLowerLimit = 1740;
     double currArmPose = 0;
-    double adjustmentMultiplier = 0.14/239; // 0.17/239
+    double adjustmentMultiplier = 0.18/239;
     double adjustmentFactor = 0;
     double wristLParallel = 0.96-0.052;
     double wristRParallel = 0+0.052;
     double wristLUp = 0+0.35;
     double wristRUp = 0.96-0.35;
+    double armRestPose = 100;
 
     double tempArmTarget = 0.0;
     double tempSlideTarget = 0.0;
     double slidePowerAdjustment = 0.7;
+    boolean droneAimed = false;
 
     boolean RBNotPressed = true;
 
@@ -56,30 +60,32 @@ public class TeleopTwoDrivers extends LinearOpMode {
 
     // Arm pidf
     public static PIDFController armPIDF = new PIDFController(0,0,0,0);
-    public static double armP = 0.012, armI = 0, armD = 0, armF = 0.00015;
+    public static double armP = 0.029, armI = 0, armD = 0.002, armF = 0.005;
     public static double armTarget = 0.0; // limit 1900, 70
     // Slides pid
     public static PIDController slidePID = new PIDController(0,0,0);
-    public static double slideP = 0.045, slideI = 0, slideD = 0;
+    public static double slideP = 0.3, slideI = 0, slideD = 0.005;
     public static double slideTarget = 0.0; // limit 670
 
 
     // Initialize standard Hardware interfaces
     public void initHardware() {
         // Servos
-        drone = hardwareMap.get(Servo.class, "drone");
-        drone.setPosition(droneRest);
+        droneAngle = hardwareMap.get(Servo.class, "droneAngle");
+        droneRelease = hardwareMap.get(Servo.class, "droneRelease");
+        droneAngle.setPosition(droneAngleRest);
+        droneRelease.setPosition(droneReleaseRest);
 
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
-        clawL.setPosition(0.44);
-        clawR.setPosition(0.60);
+        clawL.setPosition(clawLClose);
+        clawR.setPosition(clawRClose);
 
         wristL = hardwareMap.get(Servo.class, "wristL");
         wristR = hardwareMap.get(Servo.class, "wristR");
         // initialize vertically
-        wristL.setPosition(0+0.35);
-        wristR.setPosition(0.96-0.35);
+        wristL.setPosition(wristLUp);
+        wristR.setPosition(wristRUp);
 
         // Motors
         arm = hardwareMap.get(DcMotor.class, "arm");
@@ -159,16 +165,18 @@ public class TeleopTwoDrivers extends LinearOpMode {
             bl.setPower(backLeftPower);
 
             // Drone
-            if (gamepad1.x) { // endGame
-                drone.setPosition(droneLaunch);
+            if (gamepad1.x && !droneAimed) {
+                droneAngle.setPosition(droneAngleActive);
+            } else if (gamepad1.x && droneAimed) {
+                droneRelease.setPosition(droneReleaseActive);
             }
 
             // Arm and Slide PID
-            if (slideTarget < 670 && slideTarget > 20) {
-                slide.setPower(slidePID(slideTarget, slide) * slidePowerAdjustment * 0.6);
+            if (slideTarget < 740 && slideTarget >= 40) {
+                slide.setPower(slidePID(slideTarget, slide));
             }
-            if (armTarget < 1900 && armTarget > 0) {
-                arm.setPower(armPIDF(armTarget, arm) * 0.6);
+            if (armTarget < 1800 && armTarget >= 0) {
+                arm.setPower(armPIDF(armTarget, arm));
             }
             telemetry.addData("armTarget", armTarget);
             telemetry.addData("slideTarget", slideTarget);
@@ -178,9 +186,12 @@ public class TeleopTwoDrivers extends LinearOpMode {
             // Mode: REST, INTAKING, OUTTAKING
             switch (mode) {
                 case REST:
+                    telemetry.addData("mode", "rest");
+                    telemetry.update();
                     RBNotPressed = true;
-                    armTarget = 120;
-                    slideTarget = 30;
+                    armRestPose -= (gamepad2.left_trigger - gamepad2.right_trigger) * 2;
+                    armTarget = armRestPose;
+                    slideTarget = 40;
 
                     wristL.setPosition(wristLUp);
                     wristR.setPosition(wristRUp);
@@ -194,16 +205,19 @@ public class TeleopTwoDrivers extends LinearOpMode {
                     } else if (gamepad2.right_bumper && gamepad2.left_bumper && delay.seconds() >= 0.5) {
                         slidePowerAdjustment = 0.7;
                         mode = Mode.OUTTAKING;
-                        armTarget = armUpperLimit;
+                        armTarget = armUpperLimit - 300;
                         delay.reset();
                     }
                     break;
 
                 case INTAKING:
+                    telemetry.addData("mode", "intaking");
+                    telemetry.update();
 
                     telemetry.addData("controlledArmTarget",  (gamepad2.left_trigger - gamepad2.right_trigger) * 2);
 //                    telemetry.addData("controlledSlideTarget",  gamepad2.left_stick_y * 2);
-                    armTarget = armTarget - (gamepad2.left_trigger - gamepad2.right_trigger) * 2;
+                    armRestPose -= (gamepad2.left_trigger - gamepad2.right_trigger) * 2;
+                    armTarget = armRestPose;
 //                    slideTarget = slideTarget - gamepad2.left_stick_y * 2;
 
                     if (gamepad1.right_bumper || gamepad1.left_bumper) {
@@ -228,15 +242,18 @@ public class TeleopTwoDrivers extends LinearOpMode {
                             clawL.setPosition(clawLClose);
                             clawR.setPosition(clawRClose);
                         }
-                        if (delay.seconds() >= 0.8) {
+                        else if (delay.seconds() >= 0.8) {
+                            telemetry.addData("changing mode", "true");
                             mode = Mode.REST;
                         }
                     }
                     break;
 
                 case OUTTAKING:
+                    telemetry.addData("mode", "outtaking");
+                    telemetry.update();
                     if (delay.seconds() > 0.9 && delay.seconds() < 1) {
-                        slideTarget = 200;
+                        slideTarget = 250;
                     }
 
                     telemetry.addData("controlledArmTarget",  (gamepad2.left_trigger - gamepad2.right_trigger) * 5);
@@ -252,7 +269,7 @@ public class TeleopTwoDrivers extends LinearOpMode {
 
                     // auto wrist
                     if (delay.seconds() > 1.1) {
-                        if (slideTarget > 100) { // extended enough for claw
+                        if (slideTarget > 200) { // extended enough for claw
                             currArmPose = arm.getCurrentPosition(); // change back once arm is fixed
                             if (currArmPose > armUpperLimit) {
                                 adjustmentFactor = (currArmPose - armUpperLimit) * (adjustmentMultiplier);
@@ -272,7 +289,7 @@ public class TeleopTwoDrivers extends LinearOpMode {
                         slidePowerAdjustment = 0.1;
                         delay.reset();
                         RBNotPressed = false;
-                        slideTarget = 30;
+                        slideTarget = 40;
                         clawL.setPosition(clawLClose);
                         clawR.setPosition(clawRClose);
                         wristL.setPosition(wristLUp);
@@ -296,7 +313,7 @@ public class TeleopTwoDrivers extends LinearOpMode {
 //        telemetry.addData("arm current position: ", currentPosition);
 //        telemetry.addData("arm target: ", target);
 //        telemetry.update();
-        return output;
+        return output/5;
     }
     public double slidePID(double target, DcMotor motor){
         slidePID.setPID(slideP, slideI, slideD);
@@ -306,7 +323,7 @@ public class TeleopTwoDrivers extends LinearOpMode {
 //        telemetry.addData("slide current position: ", currentPosition);
 //        telemetry.addData("slide target: ", target);
 //        telemetry.update();
-        return output;
+        return output/5;
     }
 }
 

@@ -10,6 +10,8 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
+//        LEFT SIDE -----------------------------------------------------------------------------
+
         RoadRunnerBotEntity redLeftRight = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
@@ -149,6 +151,7 @@ public class MeepMeepTesting {
 
                 });
 
+//        RIGHT SIDE -----------------------------------------------------------------------------
 
         RoadRunnerBotEntity redRightRight = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -248,45 +251,52 @@ public class MeepMeepTesting {
 
                     return drive.trajectorySequenceBuilder(startPose)
                             // RED RIGHT MIDDLE
+
+                            // ------------ traj 1
                             .splineToLinearHeading(new Pose2d(16, -36, Math.toRadians(90)), Math.toRadians(0))
 
+                            // ------------ action
                             .addDisplacementMarker(() -> {
                                 // drop purple pixel
                             })
+
+                            // ------------ traj 2
                             .splineToSplineHeading(new Pose2d(44, -37, Math.toRadians(180)), Math.toRadians(90))
 //                            .splineToConstantHeading(new Vector2d(44, -37), Math.toRadians(90))
 
+                            // ------------ action
                             .addDisplacementMarker(() -> {
                                 // drop yellow pixel
                             })
 
+                            // ------------ traj 3
 //                            .splineToSplineHeading(new Pose2d(-36, -14, Math.toRadians(180)), Math.toRadians(190))
-                            .setReversed(false)
-                            .setTangent(1.5)
-                            .splineToConstantHeading(new Vector2d(16, -9), Math.toRadians(180))
+//                            .setTangent(1.5)
+                            .splineToSplineHeading(new Pose2d(16, -9, Math.toRadians(180)), Math.toRadians(180))
                             .splineToConstantHeading(new Vector2d(-36, -9), Math.toRadians(180))
 
+                            // ------------ action
                             .addDisplacementMarker(() -> {
                                 // grab from pixel stack
                             })
 
+
+                            // ------------ traj 4
                             .setReversed(true)
 //                            .setTangent(0.2)
 //                            .splineToSplineHeading(new Pose2d(44, -36, Math.toRadians(0)), Math.toRadians(270))
-
                             .splineToConstantHeading(new Vector2d(16, -9), Math.toRadians(0))
                             .splineToConstantHeading(new Vector2d(44, -36), Math.toRadians(270))
 
+                            // ------------ action
                             .addDisplacementMarker(() -> {
                                 // drop pixel
                             })
 
-
+                            // ------------ traj 5
 //                            PARKING
                             .splineToLinearHeading(new Pose2d(52, -59, Math.toRadians(180)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(56, -59, Math.toRadians(180)), Math.toRadians(0))
-
-
                             .build();
 
                 });
@@ -294,7 +304,7 @@ public class MeepMeepTesting {
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(redLeftRight)
+//                .addEntity(redLeftRight)
 //                .addEntity(redLeftLeft)
 //                .addEntity(redLeftMiddle)
 //                .addEntity(redRightRight)
